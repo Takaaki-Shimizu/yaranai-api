@@ -29,4 +29,12 @@ class YaranaiItemController extends Controller
 
         return response()->json($item, 201);
     }
+
+    // DELETE /api/yaranai-items/{yaranaiItem}
+    public function destroy(YaranaiItem $yaranaiItem)
+    {
+        $yaranaiItem->delete();
+
+        return response()->noContent();
+    }
 }
