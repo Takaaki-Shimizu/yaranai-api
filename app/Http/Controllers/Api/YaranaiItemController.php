@@ -59,7 +59,21 @@ class YaranaiItemController extends Controller
             'description' => ['nullable', 'string'],
         ]);
 
-        $yaranaiItem->update($validated);
+        try {
+            $hoursPerDay = $this->hourEstimator->estimateHoursPerDay(
+                $validated['title'],
+                $validated['description'] ?? ''
+            );
+        } catch (RuntimeException $exception) {
+            return response()->json([
+                'message' => 'AIの予測に失敗しました: ' . $exception->getMessage(),
+            ], 503);
+        }
+
+        $yaranaiItem->update([
+            ...$validated,
+            'hours_per_day' => $hoursPerDay,
+        ]);
 
         return response()->json($yaranaiItem->refresh());
     }

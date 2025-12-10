@@ -60,6 +60,27 @@ it('deletes a yaranai item', function () {
 });
 
 it('updates a yaranai item', function () {
+    config([
+        'ai.openai.api_key' => 'test-key',
+        'ai.openai.model' => 'gpt-4o-mini',
+        'ai.openai.api_url' => 'https://api.openai.test/v1/chat/completions',
+    ]);
+
+    Http::fake([
+        'https://api.openai.test/*' => Http::response([
+            'choices' => [
+                [
+                    'message' => [
+                        'content' => json_encode([
+                            'hours_per_day' => 2.5,
+                            'reason' => 'AI estimated savings.',
+                        ]),
+                    ],
+                ],
+            ],
+        ], 200),
+    ]);
+
     $item = YaranaiItem::create([
         'title' => 'Original title',
         'description' => 'Old description',
@@ -76,11 +97,13 @@ it('updates a yaranai item', function () {
         'id' => $item->id,
         'title' => 'Updated title',
         'description' => 'New description',
+        'hours_per_day' => 2.5,
     ]);
 
     $this->assertDatabaseHas('yaranai_items', [
         'id' => $item->id,
         'title' => 'Updated title',
         'description' => 'New description',
+        'hours_per_day' => 2.5,
     ]);
 });
