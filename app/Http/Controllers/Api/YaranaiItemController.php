@@ -4,10 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\YaranaiItem;
+use App\Services\Ai\DailyHourEstimator;
 use Illuminate\Http\Request;
+use RuntimeException;
 
 class YaranaiItemController extends Controller
 {
+    public function __construct(
+        private DailyHourEstimator $hourEstimator
+    ) {
+    }
+
     // GET /api/yaranai-items
     public function index(Request $request)
     {
@@ -25,7 +32,21 @@ class YaranaiItemController extends Controller
             'description' => ['nullable', 'string'],
         ]);
 
-        $item = YaranaiItem::create($validated);
+        try {
+            $hoursPerDay = $this->hourEstimator->estimateHoursPerDay(
+                $validated['title'],
+                $validated['description'] ?? ''
+            );
+        } catch (RuntimeException $exception) {
+            return response()->json([
+                'message' => 'AIの予測に失敗しました: ' . $exception->getMessage(),
+            ], 503);
+        }
+
+        $item = YaranaiItem::create([
+            ...$validated,
+            'hours_per_day' => $hoursPerDay,
+        ]);
 
         return response()->json($item, 201);
     }
