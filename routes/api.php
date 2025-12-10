@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\YaranaiItemController;
 use App\Http\Controllers\Api\IncomeSettingController;
 use App\Http\Controllers\Api\DailySavingController;
+use App\Http\Controllers\Api\SavingsSummaryController;
 
 Route::get('/yaranai-items', [YaranaiItemController::class, 'index']);
 Route::post('/yaranai-items', [YaranaiItemController::class, 'store']);
@@ -12,6 +13,7 @@ Route::put('/yaranai-items/{yaranaiItem}', [YaranaiItemController::class, 'updat
 Route::delete('/yaranai-items/{yaranaiItem}', [YaranaiItemController::class, 'destroy']);
 Route::post('/income-settings', [IncomeSettingController::class, 'store']);
 Route::post('/daily-savings', [DailySavingController::class, 'store']);
+Route::get('/savings-summary', [SavingsSummaryController::class, 'show']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
