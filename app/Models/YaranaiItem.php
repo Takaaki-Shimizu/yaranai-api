@@ -13,5 +13,10 @@ class YaranaiItem extends Model
         'user_id',
         'title',
         'description',
+        'hours_per_day',
+    ];
+
+    protected $casts = [
+        'hours_per_day' => 'float',
     ];
 }
