@@ -16,3 +16,28 @@ it('deletes a yaranai item', function () {
     $response->assertNoContent();
     $this->assertDatabaseMissing('yaranai_items', ['id' => $item->id]);
 });
+
+it('updates a yaranai item', function () {
+    $item = YaranaiItem::create([
+        'title' => 'Original title',
+        'description' => 'Old description',
+    ]);
+
+    $response = $this->putJson("/api/yaranai-items/{$item->id}", [
+        'title' => 'Updated title',
+        'description' => 'New description',
+    ]);
+
+    $response->assertOk();
+    $response->assertJson([
+        'id' => $item->id,
+        'title' => 'Updated title',
+        'description' => 'New description',
+    ]);
+
+    $this->assertDatabaseHas('yaranai_items', [
+        'id' => $item->id,
+        'title' => 'Updated title',
+        'description' => 'New description',
+    ]);
+});

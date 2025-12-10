@@ -30,6 +30,19 @@ class YaranaiItemController extends Controller
         return response()->json($item, 201);
     }
 
+    // PUT /api/yaranai-items/{yaranaiItem}
+    public function update(Request $request, YaranaiItem $yaranaiItem)
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+        ]);
+
+        $yaranaiItem->update($validated);
+
+        return response()->json($yaranaiItem->refresh());
+    }
+
     // DELETE /api/yaranai-items/{yaranaiItem}
     public function destroy(YaranaiItem $yaranaiItem)
     {
