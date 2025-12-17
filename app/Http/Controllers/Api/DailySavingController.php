@@ -7,6 +7,7 @@ use App\Models\DailySaving;
 use App\Models\IncomeSetting;
 use App\Models\YaranaiItem;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DailySavingController extends Controller
@@ -54,5 +55,32 @@ class DailySavingController extends Controller
             'hours_saved' => $saving->hours_saved,
             'amount_saved' => $saving->amount_saved,
         ], 201);
+    }
+
+    public function preview(): JsonResponse
+    {
+        $hourlyRate = IncomeSetting::orderByDesc('id')->value('hourly_rate');
+
+        if ($hourlyRate === null) {
+            return response()->json([
+                'message' => '時給が登録されていません。先に収入設定を登録してください。',
+            ], 404);
+        }
+
+        $hoursPerDay = (float) YaranaiItem::sum('hours_per_day');
+
+        if ($hoursPerDay <= 0) {
+            return response()->json([
+                'message' => 'やらないことが登録されていないため、節約時間を計算できません。',
+            ], 422);
+        }
+
+        $amountSavedPerDay = round($hourlyRate * $hoursPerDay, 2);
+
+        return response()->json([
+            'hourly_rate' => (float) $hourlyRate,
+            'hours_saved_per_day' => round($hoursPerDay, 2),
+            'amount_saved_per_day' => $amountSavedPerDay,
+        ]);
     }
 }

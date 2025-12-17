@@ -11,7 +11,9 @@ Route::get('/yaranai-items', [YaranaiItemController::class, 'index']);
 Route::post('/yaranai-items', [YaranaiItemController::class, 'store']);
 Route::put('/yaranai-items/{yaranaiItem}', [YaranaiItemController::class, 'update']);
 Route::delete('/yaranai-items/{yaranaiItem}', [YaranaiItemController::class, 'destroy']);
+Route::get('/income-settings', [IncomeSettingController::class, 'show']);
 Route::post('/income-settings', [IncomeSettingController::class, 'store']);
+Route::get('/daily-savings/preview', [DailySavingController::class, 'preview']);
 Route::post('/daily-savings', [DailySavingController::class, 'store']);
 Route::get('/savings-summary', [SavingsSummaryController::class, 'show']);
 
